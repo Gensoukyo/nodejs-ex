@@ -1,0 +1,317 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+a{
+	text-decoration: none;
+	display: inline-block;
+	color: #666;
+}
+a:hover{
+	color: #f35c8f;
+}
+li{
+	list-style-type: none;
+}
+header{
+	background-color: #fafafa;
+}
+ol{
+
+}
+.logo,.nav{
+	display: inline-block;
+}
+.logo{
+	width: 80px;
+}
+.nav li{
+	float: left;
+	width: 80px;
+	line-height: 60px;
+}
+.mine{
+	height: 60px;
+	float: right;
+}
+.mine a{
+	width: 60px;
+	height: 60px;
+}
+/*大图展示区*/
+.crossBlock{
+	height: 630px;
+	position: relative;
+}
+.slideshow{
+	width: 100%;  
+	height: 100%;
+	overflow: hidden;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.slideshow img{
+	width: 100%;
+	min-height: 100%;
+	position: absolute; /*图片采取绝对定位，均位于左上角，重叠在一起*/
+	top: 0;
+	left: 0;
+	opacity: 0; /*初始不透明度为0*/
+	transition: opacity 1s linear; /*--重点--定义一个关于透明度的transition*/
+}
+.slideshow img.active{
+  opacity: 1;
+}
+/*登录注册区*/
+.formField{
+	width: 20%;
+	position: absolute;
+	top: 10%;
+	right: 5%;
+	border-radius: 5px;
+	background-color: rgba(256,256,256,0.7);
+}
+.form-table{
+	width: 100%;
+	padding-left: 30px;
+	margin: 0 auto;
+}
+.form-td-input{
+	height: 80%;
+	width: 80%;
+}
+.erroText{
+	font-size: 0.8em;
+	color: #f45d90;
+	margin: 0 5px;
+}
+.btn{
+	height: 38px;
+	border: 0;
+	border-radius: 5%;
+	cursor: pointer;
+}
+.loginBtn{
+	width: 33%;
+	border: 1px solid #00b5e5;
+	margin: 0 5px;
+	color: #00b5e5;
+	background: #fff;
+}
+.regBtn{
+	width: 33%;
+	background-color: #00b5e5;
+}
+.regBtn input{
+	width: 100%;
+	color: #fff;
+	background-color: #00b5e5;
+}
+.part{
+	width: 70%;
+	margin: 5px auto;
+	overflow: hidden;
+}
+.songPlay{
+	width: 70%;
+	height: 100%;
+	float: left;
+	overflow: hidden;
+}
+.title{
+	width: 100%;
+	height: 5%;
+	margin: 10px 15px;
+	border-bottom: 2px solid #00b5e5;
+	overflow: hidden;
+}
+.title span{
+	display: inline-block;
+	margin: 5px 0;
+}
+.cardPlay{
+	width: 200px;
+	margin: 2% 3%;
+	float: left;
+}
+.cover{
+	width: 100%;
+	overflow: hidden;
+	border-radius: 3px;
+}
+.cardPlay img{
+	width: 200px;
+	height: 200px;
+}
+.songInfo{
+	padding: 5%;
+}
+.songInfo a{
+	font-size: 14px;
+	height: 20px;
+}
+.musicBoard{
+	width: 30%;
+	height: 100%;
+	float: right;
+}
+.list{
+	padding: 10px 20px;
+	margin: 0 30px;
+	line-height: 36px;
+}
+.list li{
+	list-style-type: decimal;
+}
+.list .btn{
+	width: 100%;
+	text-align: center;
+	background-color: #fafafa;
+}
+.list a{
+	width: 100%;
+}
+.halfBlock{
+	height: 330px;
+	width: 50%;
+	margin: 30px 0;
+	float: left;
+	position: relative;
+}
+.newsList{
+	line-height: 33px;
+	padding-right: 0;
+}
+.newsList em{
+	float: right;
+	padding: 0;
+}
+
+.picBlock{
+	overflow: hidden;
+	margin: 15px 20px;
+	background-color: #fafafa;
+}
+.picBlock .cardPlay{
+	width: 20%;
+	margin: 0;
+}
+.description{
+	padding: 25px;
+	overflow:auto
+}
+/*底部版权区*/
+footer{
+    width: 100%;
+    border-top: 1px solid #00b5e5;
+    background-color: #fafafa;
+    letter-spacing: 1px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+.codePicInfo{
+	width: 25%;
+	height: 180px;
+	border-right: 1px solid #666;
+	margin: 25px 0;
+	float: left;
+}
+.qrcode{
+	width: 50%;
+	height: 100%;
+	margin: 0 15px;
+	float: left;
+}
+.qrcode img{
+	width: 100%;
+	height: 100%;
+}
+.statement{
+	height: 180px;
+	overflow: auto;
+	margin: 25px;
+	padding: 0 25px;
+}
+.statement li{
+	float: left;
+	line-height: 40px;
+	width: 240px;
+}
+
+/***song***/
+
+.songSheet{
+	width: 70%;
+	margin: 20px auto;
+	overflow: hidden;
+}
+.page_wrap{
+    text-align: center;
+    font-size: 14px;
+}
+.page_wrap a{
+    display: inline-block;
+    padding: 0 10px;
+    margin: 0 10px;
+    line-height: 30px;
+    height: 30px;
+    border: 1px solid #e5e9ef;
+    border-radius: 3px;
+    text-decoration: none;
+}
+.page_wrap .cur,.page_wrap a:hover{
+    color: #fff;
+    background-color: #00b5e5;
+}  
+.page_wrap span{
+    margin: 0 5px;
+}
+.page_wrap input{
+    width: 50px;
+    height: 25px;
+    border: 1px solid #e5e9ef;
+    text-align: center;
+}
+
+/***contact***/
+.fixPic{
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	position: fixed;
+}
+.fixPic form{
+	width: 30%;
+	border-radius: 5px;
+	background-color: rgba(256,256,256,0.7);
+	margin: 30px auto;
+}
+.subBtn{
+	width: 30%;
+}
+
+/***about***/
+.intro{
+	width: 20%;
+	height: 100%;
+	background-color: rgba(256,256,256,.7);
+	float: right;
+}
+.intro-ct{
+	width: 100%;
+	height: 50%;
+	padding: 30px 0;
+}
+.intro h1{
+	text-align: center;
+}
+.intro p,.intro li{
+	padding: 10px 30px;
+}
+
+/***board***/
+.board{
+	width: 22%;
+	float: left;
+}

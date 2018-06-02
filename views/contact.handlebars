@@ -1,0 +1,53 @@
+<div class="fixPic" style="background-image: url(/img/banner2.jpg);">
+	<form action="/process/contact">
+		<table class="form-table" border="0" cellspacing="0" cellpadding="0">
+		    <tbody>
+		        <tr>
+					<input type="hidden" name="referrerRecord">
+		            <td width="330" height="40" valign="bottom">姓名/Name<span class="erroText erroUsername"></span></td>
+		        </tr>
+		        <tr>
+                    <td height="40">
+                        <input name="username" class="form-td-input" id="username" type="text" placeholder="Your Name">
+                    </td>
+                </tr>
+		        <tr>
+		            <td width="330" height="40" valign="bottom">邮箱/Email<span class="erroText erroEmail"></span></td>
+		        </tr>
+		        <tr>
+                    <td height="40">
+                        <input name="email" class="form-td-input" id="email" type="email" placeholder="Your Email">
+                    </td>
+                </tr>
+		        <tr>
+		            <td width="330" height="40" valign="bottom">电话/Telphone<span class="erroText erroTel"></span></td>
+		        </tr>
+		        <tr>
+                    <td height="40">
+                        <input name="tel" class="form-td-input" id="tel" type="tel" placeholder="Your Telphonenumber">
+                    </td>
+                </tr>
+		        <tr>
+		            <td width="330" height="40" valign="bottom">意见与建议/Suggestion</td>
+		        </tr>
+                <tr>
+                	<td height="200">
+                		<textarea class="text-area form-td-input" id="textArea" placeholder="请输入反馈内容" max="140"></textarea>
+                	</td>
+                </tr>
+                <tr>
+                	<td height="80" align="center">
+						<div class="subBtn regBtn">
+                            <input class="btn" type="button" value="提交">
+                        </div>
+                	</td>
+                </tr>
+	        </tbody>
+	    </table>
+	</form>
+</div>
+<script>
+	$(document).ready(function () {
+		document.querySelector('input[name="referrerRecord"]').value=document.referrer;
+	});
+</script>

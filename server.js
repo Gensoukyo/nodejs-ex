@@ -1,105 +1,236 @@
 //  OpenShift sample Node application
 var express = require('express'),
-    app     = express(),
-    morgan  = require('morgan');
-    
-Object.assign=require('object-assign')
+    app     = express();
+var session = require('express-session');
+var User = require('./models/user.js');
+var credentials=require('./credentials.js');
+var songinfo=require('./lib/songinfo.js');
+var baseUrl=require('./lib/static.js');
+var imgUrl=require('./lib/imgUrl.js');
 
-app.engine('html', require('ejs').renderFile);
-app.use(morgan('combined'))
-
+var exphbs  = require('express-handlebars').create({defaultLayout:'main',
+  helpers:{
+    section:function (name,options) {
+      if (!this._sections) {
+        this._sections={};
+      }
+      this._sections[name]=options.fn(this);
+      return null;
+    },
+    devide:function (name,options) {
+      this[options.hash.source]=name;
+      return options.fn(this);
+    },
+    static:function (name) {
+      return baseUrl.map(name);
+    }
+  }
+});
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
     mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
     mongoURLLabel = "";
 
-if (mongoURL == null && process.env.DATABASE_SERVICE_NAME) {
-  var mongoServiceName = process.env.DATABASE_SERVICE_NAME.toUpperCase(),
-      mongoHost = process.env[mongoServiceName + '_SERVICE_HOST'],
-      mongoPort = process.env[mongoServiceName + '_SERVICE_PORT'],
-      mongoDatabase = process.env[mongoServiceName + '_DATABASE'],
-      mongoPassword = process.env[mongoServiceName + '_PASSWORD']
-      mongoUser = process.env[mongoServiceName + '_USER'];
+app.engine('handlebars',exphbs.engine);
+app.set('view engine', 'handlebars');
+//添加静态资源
+app.use(express.static(__dirname+'/public'));
+//引入cookie中间件
+app.use(require('body-parser').urlencoded({extended:false}));
+app.use(require('body-parser').json());
+app.use(require('cookie-parser')(credentials.cookieSecret));
+app.use(session({
+  secret: credentials.cookieSecret,
+  resave: false,
+  saveUninitialized: false
+  //,store: new MongoStore({ url:credentials.mongo.dev.connectionstring })
+}));
 
-  if (mongoHost && mongoPort && mongoDatabase) {
-    mongoURLLabel = mongoURL = 'mongodb://';
-    if (mongoUser && mongoPassword) {
-      mongoURL += mongoUser + ':' + mongoPassword + '@';
-    }
-    // Provide UI label that excludes user id and pw
-    mongoURLLabel += mongoHost + ':' + mongoPort + '/' + mongoDatabase;
-    mongoURL += mongoHost + ':' +  mongoPort + '/' + mongoDatabase;
-
+//测试路由
+app.use(function (req,res,next) {
+  res.locals.showTests=app.get('env')!=='production'&&req.query.test==='1';
+  if (!res.locals.partials){
+    res.locals.partials={};
   }
-}
-var db = null,
-    dbDetails = new Object();
+  
+  res.locals.partials.ref='reffer';
+  res.locals.user=req.session.user;
+  delete req.session.user;
+  res.locals.error=req.session.error;
+  delete req.session.error;
+  res.locals.islogin=req.signedCookies.islogin;
+  next();
+});
 
-var initDb = function(callback) {
-  if (mongoURL == null) return;
-
-  var mongodb = require('mongodb');
-  if (mongodb == null) return;
-
-  mongodb.connect(mongoURL, function(err, conn) {
-    if (err) {
-      callback(err);
-      return;
-    }
-
-    db = conn;
-    dbDetails.databaseName = db.databaseName;
-    dbDetails.url = mongoURLLabel;
-    dbDetails.type = 'MongoDB';
-
-    console.log('Connected to MongoDB at: %s', mongoURL);
+//主页面
+app.get('/',function (req,res) {
+  res.render('home',{
+    loginPage:'登录',
+    formId:'loginForm',
+    postUrl:'/process/login',
+    imgUrl:imgUrl,
+    song:songinfo.song.slice(0,6),
+    playList:songinfo.board.display.slice(0,10),
+    news:songinfo.news.slice(0,8),
+    recommend:songinfo.recommend.slice(0,4)
   });
-};
+});
 
-app.get('/', function (req, res) {
-  // try to initialize the db on every request if it's not already
-  // initialized.
-  if (!db) {
-    initDb(function(err){});
-  }
-  if (db) {
-    var col = db.collection('counts');
-    // Create a document with request IP and current time of request
-    col.insert({ip: req.ip, date: Date.now()});
-    col.count(function(err, count){
-      if (err) {
-        console.log('Error running count. Message:\n'+err);
-      }
-      res.render('index.html', { pageCountMessage : count, dbInfo: dbDetails });
-    });
-  } else {
-    res.render('index.html', { pageCountMessage : null});
+//注册页
+app.get('/reg',function (req,res) {
+  res.render('home',{
+    regPage:'注册',
+    formId:'regForm',
+    postUrl:'/process/reg'
+  });
+})
+
+//about页面
+app.get('/about',function (req,res) {
+  res.render('about',{
+    pageTestScript: '/qa/tests-about.js'
+  });
+});
+
+//contact表单页面
+app.get('/contact',function (req,res) {
+  res.render('contact');
+});
+
+//board表单页面
+app.get('/board',function (req,res) {
+  res.render('board');
+});
+
+//歌单页面
+app.get('/sheet',function (req,res) {
+  res.render('sheet',{
+    song: songinfo.sheet.slice(0,12)
+  });
+});
+
+//board数据
+app.get('/data/board',function (req,res) {
+  var board=songinfo.board;
+  if (board) {
+    res.json(board)
   }
 });
 
-app.get('/pagecount', function (req, res) {
-  // try to initialize the db on every request if it's not already
-  // initialized.
-  if (!db) {
-    initDb(function(err){});
+//展示页
+app.get('/list/:types',function (req,res,next) {
+  var info=null;
+  var types=req.params.types;
+  if(!types){
+    return next();
   }
-  if (db) {
-    db.collection('counts').count(function(err, count ){
-      res.send('{ pageCount: ' + count + '}');
+  info=songinfo[types];
+  res.render(types,{
+    song:info
+  });
+});
+
+//data获取页
+app.get('/list/:types/:detail',function (req,res,next) {
+  var info=null;
+  var types=req.params.types,
+    detail=req.params.detail;
+  if(!detail){
+    return next();
+  }
+  info=songinfo[types][detail];
+  res.json(info);
+});
+
+//登录表单处理路由
+app.post('/process/login',function (req,res) {
+  var uname=req.body.username||'',upassword=req.body.password||'';
+  console.log(uname);
+  console.log(upassword);
+  if (uname&&upassword) {
+    User.findOne({name:uname},function(err,doc){
+      if(err){
+              res.status(500);
+              res.render('500');
+              console.log(err);
+          }else if(!doc){
+          //查询不到用户名匹配信息，则用户名不存在
+              req.session.error = '用户名不存在';
+              console.log('用户名不存在');
+              res.send({success:false});
+          }else if(upassword !== doc.password){
+          //查询到匹配用户名的信息，但相应的password属性不匹配
+              req.session.error = "密码错误";
+              console.log("密码错误");
+              res.send({success:false});
+          }
+          else{
+          //信息匹配成功，则将此对象（匹配到的user) 赋给session.user  并返回成功
+              req.session.user = doc;
+              console.log('成功');
+              res.cookie('islogin', credentials.cookieSecret, { maxAge: 60000, signed: true});
+              res.send({success:true,url:'/'});
+          }
+      });
+  }
+  else{
+    console.log("数据错误");
+    res.send({success:false});
+  }
+});
+//注册表单处理路由
+app.post('/process/reg',function (req,res) {
+  console.log(req.body);
+  var uname=req.body.username||'',upassword=req.body.password||'';
+  if (uname&&upassword){
+    User.findOne({name: uname},function(err,doc){
+      if(err){
+        req.session.error =  '网络异常错误！';
+        res.status(500);
+        console.log(err);
+        res.render('500');
+        }else if(doc){ 
+              req.session.error = '用户名已存在！';
+              console.log('用户名已存在！')
+              res.send({success:false,url:'/reg'});
+          }else{ 
+              User.create({
+              // 创建一组user对象置入model
+                  host: req.hostname,
+                  id: '无名罪袋',
+                  name: uname,
+                  password: upassword
+              },function(err,doc){ 
+                  if (err) {
+                      res.status(500);
+                      console.log(err);
+                      res.render('500');
+                  }
+                  else {
+                      req.session.error = '用户名创建成功！';
+                      req.session.user = doc;
+                      res.send({success:true,url:'/'});
+                  }
+              });
+        }
     });
-  } else {
-    res.send('{ pageCount: -1 }');
   }
+  else{
+    console.log("数据错误");
+    res.send({success:false});
+  }
+});
+
+//404页面
+app.use(function (req,res,next) {
+  res.status(404);
+  res.render('404');
 });
 
 // error handling
 app.use(function(err, req, res, next){
   console.error(err.stack);
   res.status(500).send('Something bad happened!');
-});
-
-initDb(function(err){
-  console.log('Error connecting to Mongo. Message:\n'+err);
 });
 
 app.listen(port, ip);

@@ -1,0 +1,11 @@
+<div class="songSheet">
+	<div class="title">
+		<span class="left-position"><strong>热门歌单</strong></span>
+		<a href="##" class="right-position"><span>分类</span></a>
+	</div>
+	{{#each song}}
+		{{> card}}
+	{{/each}}
+</div>
+{{> pages}}
+{{{_sections.script_pages}}}

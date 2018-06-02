@@ -1,0 +1,16 @@
+.text-ellipsis {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.left-position{
+	float: left;
+	display: inline-block;
+	padding: 0 15px;
+}
+.right-position{
+	float: right;
+	display: inline-block;
+	padding: 0 15px;
+}

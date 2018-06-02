@@ -1,0 +1,97 @@
+<div class="formField">
+    <form id="{{formId}}" action="{{postUrl}}?form={{formId}}" method="post" accept-charset="utf-8" autocomplete="off">
+        <table class="form-table" border="0" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                	<input name="referrer" type="hidden" value="{{partials.ref}}">
+                    <td width="330" height="40" valign="bottom">账号/Account<span class="erroText erroUsername"></span></td>
+                </tr>
+                <tr>
+                    <td height="40">
+                        <input name="username" class="form-td-input" id="username" type="text" placeholder="输入用户名/邮箱">
+                    </td>
+                </tr>
+                <tr>
+                    <td width="330" height="40" valign="bottom">密码/Password<span class="erroText erroPassword"></span></td>
+                </tr>
+                <tr>
+                    <td height="40">
+                        <input name="password" class="form-td-input" id="password" type="password" placeholder="输入您的密码">
+                    </td>
+                </tr>
+                {{#if loginPage}}
+                <tr>
+                    <td width="330" height="80" align="left">
+                        <input class="loginBtn btn" type="submit" value="登录">
+                        <a href="/Reg" class="regBtn">
+                            <input class="btn" type="button" value="注册">
+                        </a>
+                    </td>
+                </tr>
+                {{/if}}
+                {{#if regPage}}
+                <tr>
+                    <td width="330" height="40" valign="bottom">密码确认/Again Password<span class="erroPassConfirm"></span></td>
+                </tr>
+                <tr>
+                    <td height="40">
+                        <input name="passconfirm" class="form-td-input" id="passconfirm" type="password" placeholder="确认您的密码">
+                    </td>
+                </tr>
+                <tr>
+                    <td width="330" height="80" align="left">
+                        <input class="regBtn btn"  type="submit" value="注册">
+                        <span class="toLogin"><a href="/">返回登录</a></span>
+                    </td>
+                </tr>
+                {{/if}}
+            </tbody>
+        </table>
+    </form>
+</div>
+{{#section 'script_form'}}
+<script>
+$(document).ready(function() {
+    var $formField = $('.formField');
+    var $erroText = $('.erroText');
+    var $erroPassConfirm = $('.erroPassConfirm');
+    var $passconfirm = $('#passconfirm');
+    var $username = $('#username');
+    var $password = $('#password');
+    $passconfirm.on('blur',function () {
+    	if ($password.val()!==$passconfirm.val()) {
+    		$erroPassConfirm.text('请确认密码一致！');
+    		$('.regBtn').attr("disabled","disabled");
+    	}
+    	else {
+    		$('.regBtn').removeAttr("disabled");
+    	}
+    });
+    $formField.children('form').on('submit', function(evt) {
+        evt.preventDefault();
+        if (!$username.val()||!$password.val()){
+        	$erroText.text('用户名或密码不能为空！');
+        	return ;
+        }
+        var action = $(this).attr('action');
+        $.ajax({
+            url: action,
+            type: 'post',
+            data: $(this).serialize(),
+            dataType: "json",
+            success: function(data) {
+                if (!data.success&&!data.url) {
+                    $erroText.text('帐户名或登录密码不正确，请重新输入！');
+                }
+                else if (!data.success){
+                	$erroText.text('用户名已存在！');
+                }
+                else {
+                	window.location.href=data.url;
+                }
+            }
+        });
+    });
+});
+</script>
+{{/section}}

@@ -1,0 +1,38 @@
+<div class="slideshow">
+    {{#each img}}
+        <a href="{{{this.url}}}"><img src="{{static this.pic}}" alt="{{this.alt}}"></a>
+    {{/each}}
+</div>
+{{#section 'script_carousel'}}
+<script>
+var slideshows = document.getElementsByClassName("slideshow");
+
+function slideShow(slideshow,imgs) {
+    var current = 0; //current为当前活跃的图片编号
+
+    function carousel() { //切换图片的函数
+        imgs[current].className = ""; //图片淡出
+        current++; //自增1
+        if (current >= imgs.length) current = 0;
+        imgs[current].className = "active"; //图片淡入
+    }
+
+    //每2s调用carousel函数进行图片轮播
+    var slideon = setInterval(carousel, 4000);
+    slideshow.onmouseover = function() {
+        clearInterval(slideon); //当鼠标移入时清除轮播事件
+    }
+    slideshow.onmouseout = function() {
+        slideon = setInterval(carousel, 4000); //当鼠标移出时重新开始轮播事件
+    }
+
+}
+$(document).ready(function () {
+    for (let i = slideshows.length - 1; i >= 0; i--) {
+        var imgs=slideshows[i].getElementsByTagName("img");
+        imgs[0].setAttribute('class','active');
+        slideShow(slideshows[i],imgs);
+    }
+});
+</script>
+{{/section}}

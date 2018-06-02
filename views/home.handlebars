@@ -1,0 +1,89 @@
+<section>
+	<div class="crossBlock">
+	    {{#devide imgUrl.banner source='img'}}
+	        {{> carousel}}
+	    {{/devide}}
+		{{> form}}
+	</div>
+</section>
+<section>
+	<div class="part">
+		<div class="songPlay">
+			<div class="title">
+				<span class="left-position"><strong>歌曲</strong></span>
+				<a href="/sheet" class="right-position"><span>更多</span></a>
+			</div>
+			{{#each song}}
+				{{> card}}
+			{{/each}}
+		</div>
+		<div class="musicBoard">
+			<div class="title">
+				<span class="left-position"><strong>播放排行</strong></span>
+				<a href="/board" class="right-position"><span>更多</span></a>
+			</div>
+			<div class="list">
+				<ol>
+					{{#each playList}}
+					    <li><a href="">{{this.name}}</a></li>
+					{{/each}}
+					<div class="btn"><a href="/board">查看更多&gt;</a></div>
+				</ol>
+			</div>
+		</div>
+	</div>
+</section>
+<section>
+	<div class="part">
+		<div class="title">
+			<span class="left-position"><strong>资讯</strong></span>
+			<a href="/list/song/sheet" class="right-position"><span>更多</span></a>
+		</div>
+		<div class="halfBlock">
+		    {{#devide imgUrl.picNews source='img'}}
+		        {{> carousel}}
+		    {{/devide}}
+		</div>
+		<div class="halfBlock">
+			<div class="list newsList">
+				<h2>DuangDuang资讯</h2>
+				<ul>
+					{{#each news}}
+					    <li><a href="{{this.url}}"><span>{{this.desc}}</span><em>{{this.date}}</em></a></li>
+					{{/each}}
+				</ul>
+			</div>
+		</div>
+	</div>
+</section>
+<section>
+	<div class="part">
+		<div class="title">
+			<span class="left-position"><strong>品鉴</strong></span>
+			<a href="/list/song/sheet" class="right-position"><span>更多</span></a>
+		</div>
+		{{#each recommend}}
+			<div class="picBlock">
+				<div class="cardPlay">
+					<div class="cover">
+						<a href="{{this.url}}" ><img src="{{this.pic}}" alt="播放"></a>
+					</div>
+				</div>
+				<div class="description">
+					<h3>{{this.name}}</h3><a href="">  {{this.singer}}</a>
+					<p>{{this.desc}}</p>
+				</div>
+			</div>
+		{{/each}}
+	</div>
+</section>
+{{#if user}}
+<script>
+	$(document).ready(function () {
+		$('.formField').remove();
+		$('#account').text('{{user.name}}');
+	})
+</script>
+{{/if}}
+{{{_sections.script_carousel}}}
+{{{_sections.script_form}}}

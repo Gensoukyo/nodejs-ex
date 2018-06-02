@@ -1,0 +1,85 @@
+<script src="https://cdn.bootcss.com/handlebars.js/4.0.11/handlebars.min.js"></script>
+<script id="musicBoardTmp" type="text/x-handlebars-template">
+	<div class="board">
+		<div class="cardPlay">
+			<div class="cover">
+				<img src="/img/display.jpg" alt="榜单">
+			</div>
+		</div>
+		<div class="description">
+			<h3>实时排行榜</h3>
+		</div>
+		<div class="list">
+			<ol>
+				\{{#each display}}
+				    <li><a href="\{{this.url}}">\{{this.name}}</a></li>
+				\{{/each}}
+			</ol>
+		</div>
+	</div>
+	<div class="board">
+		<div class="cardPlay">
+			<div class="cover">
+				<img src="/img/demostic.jpg" alt="榜单">
+			</div>
+		</div>
+		<div class="description">
+			<h3>国内榜单</h3>
+		</div>
+		<div class="list">
+			<ol>
+				\{{#each demostic}}
+				    <li><a href="\{{this.url}}">\{{this.name}}</a></li>
+				\{{/each}}
+			</ol>
+		</div>
+	</div>
+	<div class="board">
+		<div class="cardPlay">
+			<div class="cover">
+				<img src="/img/billboard.jpg" alt="榜单">
+			</div>
+		</div>
+		<div class="description">
+			<h3>美国Billboard</h3>
+		</div>
+		<div class="list">
+			<ol>
+				\{{#each billboard}}
+				    <li><a href="\{{this.url}}">\{{this.name}}</a></li>
+				\{{/each}}
+			</ol>
+		</div>
+	</div>
+	<div class="board">
+		<div class="cardPlay">
+			<div class="cover">
+				<img src="/img/japen.jpg" alt="榜单">
+			</div>
+		</div>
+		<div class="description">
+			<h3>日本Oricon周榜</h3>
+		</div>
+		<div class="list">
+			<ol>
+				\{{#each Oricon}}
+				    <li><a href="\{{this.url}}">\{{this.name}}</a></li>
+				\{{/each}}
+			</ol>
+		</div>
+	</div>
+</script>
+{{#section 'boardscript'}}
+<script>
+	$(document).ready(function () {
+		var $musicBoardTmp=Handlebars.compile($('#musicBoardTmp').html())
+		//Handlebars.compile接收一个模板，返回一个方法。该方法接收一个上下文对象，返回渲染的字符串
+		$.ajax('/data/board',{
+			success:function (data) {
+				$('#musicBoard').html($musicBoardTmp(data));
+			}
+		});
+	});
+</script>
+{{/section}}
+<div id="musicBoard" class="part">获取数据错误</div>
