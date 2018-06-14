@@ -2,7 +2,8 @@
 var express = require('express'),
     app     = express();
 var session = require('express-session');
-var User = require('./models/user.js');
+var User = require('./models/user.js'),
+  Message=require('./models/message.js');
 var credentials=require('./credentials.js');
 var songinfo=require('./lib/songinfo.js');
 var baseUrl=require('./lib/static.js');
@@ -81,7 +82,12 @@ app.get('/reg',function (req,res) {
   res.render('home',{
     regPage:'注册',
     formId:'regForm',
-    postUrl:'/process/reg'
+    postUrl:'/process/reg',
+    imgUrl:imgUrl,
+    song:songinfo.song.slice(0,6),
+    playList:songinfo.board.display.slice(0,10),
+    news:songinfo.news.slice(0,8),
+    recommend:songinfo.recommend.slice(0,4)
   });
 })
 
@@ -220,6 +226,78 @@ app.post('/process/reg',function (req,res) {
     res.send({success:false});
   }
 });
+
+//评论获取
+app.get('/message',function(req, res){
+    var userName=req.query.userName||'';
+    //如果有用户名，说明前面已经提交过了，传递到视图上去，这样也没刷新后不用重新填写用户名
+    if (userName) {
+      Message.getAll(function(err,messages){
+          if(err){
+              console.log(err);
+              //异常跳转到error界面
+              res.redirect('/505');
+          }
+          else{
+              res.render('message', {
+                msgs:messages,
+                comment:true,
+                user:{
+                  name:userName
+                }
+              });
+          }
+      });
+    }
+    else{
+      console.log('未登录');
+      res.send('请先返回登录......');
+    }
+});
+
+// 评论储存
+app.post('/process/message',function(req, res){
+  var opt=req.query.opt;
+    var userName= req.body.userName,
+      owner=req.body.owner,
+      content= req.body.content;
+    var conditions={userName:owner,content:content};
+    console.log('userId='+userName+' content='+content);
+    var callback=function(err,flag){
+        if(err){
+                console.log(err);
+                res.redirect('/505');
+            }
+        else{
+          console.log(flag);
+            //保存成功，刷新message界面，顺便把用户名通过url传过去
+            res.redirect('/message?userName='+userName);
+        }
+            
+    }
+    switch (opt){
+      case 'add': Message.add(userName,content,callback);break;
+      case 'remove': Message.removeMsg(conditions,callback);break;
+    }
+});
+
+app.post('/process/comment',function (req,res) {
+  var userName= req.body.userName,
+    owner=req.body.owner,
+    content= req.body.content,
+    zNum= +req.body.zNum;
+  console.log(req.body);
+  var conditions={userName:owner,content:content};
+  Message.updateData(userName,conditions,zNum,function (err,flag) {
+    if(err){
+            console.log(err);
+            res.redirect('/505');
+        }
+        else if (flag) {
+          console.log('点了赞');
+        }
+  });
+})
 
 //404页面
 app.use(function (req,res,next) {

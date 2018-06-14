@@ -4,9 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>WYYX</title>
-    {{#if showTests}}
-    <link rel="stylesheet" href="/vendor/mocha.css"> {{/if}}
     <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    {{#if showTests}}
+    	<link rel="stylesheet" href="/vendor/mocha.css"> 
+    {{/if}}
+    {{#if comment}}
+    	<link rel="stylesheet" href="css/flexTextComment.css">
+    {{/if}}
     <link rel="stylesheet" href="{{static '/css/main.css'}}">
     <link rel="stylesheet" href="{{static '/css/component.css'}}">
     <style>
@@ -24,13 +28,14 @@
             <ul>
                 <li><a href="/">首页</a></li>
                 <li><a href="/sheet">发现</a></li>
-                <li><a href="http://music.163.com/#/friend">圈子</a></li>
+                <li><a href="/message" id="comment">圈子</a></li>
                 <li><a href="/about">关于</a></li>
             </ul>
         </div>
         <div class="nav mine">
             <ul>
-                <li id="account"><a href="/">未登录</a></li>
+                <li><span class="erroText erroAuth"></span></li>
+                <li><a href="/" id="account" >{{user.name}}</a></li>
                 <li><a href="/"><img src="/img/avatar.jpg" alt="face"></a></li>
             </ul>
         </div>

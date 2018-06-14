@@ -37,7 +37,7 @@
 	<div class="part">
 		<div class="title">
 			<span class="left-position"><strong>资讯</strong></span>
-			<a href="/list/song/sheet" class="right-position"><span>更多</span></a>
+			<a href="/" class="right-position"><span>更多</span></a>
 		</div>
 		<div class="halfBlock">
 		    {{#devide imgUrl.picNews source='img'}}
@@ -60,7 +60,7 @@
 	<div class="part">
 		<div class="title">
 			<span class="left-position"><strong>品鉴</strong></span>
-			<a href="/list/song/sheet" class="right-position"><span>更多</span></a>
+			<a href="/" class="right-position"><span>更多</span></a>
 		</div>
 		{{#each recommend}}
 			<div class="picBlock">
@@ -70,20 +70,27 @@
 					</div>
 				</div>
 				<div class="description">
-					<h3>{{this.name}}</h3><a href="">  {{this.singer}}</a>
-					<p>{{this.desc}}</p>
+					<a href="{{this.url}}" ><h3>{{this.name}}</h3></a>
+					<p><a href="">{{this.singer}}</a></p>
+					<p>{{this.desc}}<br></p>
 				</div>
 			</div>
 		{{/each}}
 	</div>
 </section>
 {{#if user}}
-<script>
-	$(document).ready(function () {
-		$('.formField').remove();
-		$('#account').text('{{user.name}}');
-	})
-</script>
+	<script>
+		$(document).ready(function () {
+			$('.formField').remove();
+			$('#comment').attr('href','/message?userName={{user.name}}');
+		})
+	</script>
 {{/if}}
+{{#unless user}}
+	<script>
+		$('#account').html('游客');
+		$('#comment').attr('href','/message?userName=游客');
+	</script>
+{{/unless}}
 {{{_sections.script_carousel}}}
 {{{_sections.script_form}}}
