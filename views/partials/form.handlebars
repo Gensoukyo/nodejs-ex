@@ -3,8 +3,8 @@
         <table class="form-table" border="0" cellspacing="0" cellpadding="0">
             <tbody>
                 <tr>
-                	<input name="referrer" type="hidden" value="{{partials.ref}}">
-                    <td width="330" height="40" valign="bottom">账号/Account<span class="erroText erroUsername"></span></td>
+                    <input name="referrer" type="hidden" value="{{partials.ref}}">
+                    <td width="330" height="40" valign="bottom">账号/Account</td>
                 </tr>
                 <tr>
                     <td height="40">
@@ -12,12 +12,18 @@
                     </td>
                 </tr>
                 <tr>
-                    <td width="330" height="40" valign="bottom">密码/Password<span class="erroText erroPassword"></span></td>
+                    <td width="330" height="20" valign="bottom"><span class="erroText erroUsername"></span></td>
+                </tr>
+                <tr>
+                    <td width="330" height="20" valign="bottom">密码/Password</td>
                 </tr>
                 <tr>
                     <td height="40">
                         <input name="password" class="form-td-input" id="password" type="password" placeholder="输入您的密码">
                     </td>
+                </tr>
+                <tr>
+                    <td width="330" height="20" valign="bottom"><span class="erroText erroPassword"></span></td>
                 </tr>
                 {{#if loginPage}}
                 <tr>
@@ -31,7 +37,7 @@
                 {{/if}}
                 {{#if regPage}}
                 <tr>
-                    <td width="330" height="40" valign="bottom">密码确认/Again Password<span class="erroPassConfirm"></span></td>
+                    <td width="330" height="20" valign="bottom">密码确认/Again Password</td>
                 </tr>
                 <tr>
                     <td height="40">
@@ -39,8 +45,11 @@
                     </td>
                 </tr>
                 <tr>
+                    <td width="330" height="20" valign="bottom"><span class="erroText erroPassConfirm"></span></td>
+                </tr>
+                <tr>
                     <td width="330" height="80" align="left">
-                        <input class="regBtn btn"  type="submit" value="注册">
+                        <input class="regBtn btn" type="submit" value="注册">
                         <span class="toLogin"><a href="/">返回登录</a></span>
                     </td>
                 </tr>
@@ -54,24 +63,26 @@
 $(document).ready(function() {
     var $formField = $('.formField');
     var $erroText = $('.erroText');
+    var $erroUsername = $('.erroUsername');
+    var $erroPassword = $('.erroPassword');
     var $erroPassConfirm = $('.erroPassConfirm');
     var $passconfirm = $('#passconfirm');
     var $username = $('#username');
     var $password = $('#password');
-    $passconfirm.on('blur',function () {
-    	if ($password.val()!==$passconfirm.val()) {
-    		$erroPassConfirm.text('请确认密码一致！');
-    		$('.regBtn').attr("disabled","disabled");
-    	}
-    	else {
-    		$('.regBtn').removeAttr("disabled");
-    	}
-    });
+
     $formField.children('form').on('submit', function(evt) {
         evt.preventDefault();
-        if (!$username.val()||!$password.val()){
-        	$erroText.text('用户名或密码不能为空！');
-        	return ;
+        if (!$username.val()){
+            $erroUsername.text('用户名不能为空！');
+            return ;
+        }
+        if (!$password.val()){
+            $erroPassword.text('密码不能为空！');
+            return ;
+        }
+        if ($passconfirm.length&&$password.val()!==$passconfirm.val()) {
+            $erroPassConfirm.text('请确认密码一致！');
+            return ;
         }
         var action = $(this).attr('action');
         $.ajax({
@@ -80,18 +91,28 @@ $(document).ready(function() {
             data: $(this).serialize(),
             dataType: "json",
             success: function(data) {
-                if (!data.success&&!data.url) {
-                    $erroText.text('帐户名或登录密码不正确，请重新输入！');
+                if (data.success) {
+                    window.location.href=data.url;
                 }
-                else if (!data.success){
-                	$erroText.text('用户名已存在！');
+                else if (!data.username){
+                    var userWarn=action.indexOf('login')>0?'用户名不存在！':'用户名已存在！';
+                    data.username===false?$erroUsername.text(userWarn):$erroUsername.text('用户名不能为空！');
                 }
-                else {
-                	window.location.href=data.url;
+                else if (!data.password) {
+                    data.password===false?$erroPassword.text('密码错误！'):$erroPassword.text('密码不能为空！');
                 }
+            },
+            error:function () {
+                return ;
             }
         });
     });
+
+    $('.form-td-input').each(function () {
+        $(this).on('focus',function () {
+            $(this).closest('tr').next().find(".erroText").empty();
+        })
+    })
 });
 </script>
 {{/section}}
