@@ -82,14 +82,12 @@
 	<script>
 		$(document).ready(function () {
 			$('.formField').remove();
-			$('#comment').attr('href','/message?userName={{user.name}}');
 		})
 	</script>
 {{/if}}
 {{#unless user}}
 	<script>
 		$('#account').html('游客');
-		$('#comment').attr('href','/message?userName=游客');
 	</script>
 {{/unless}}
 {{{_sections.script_carousel}}}

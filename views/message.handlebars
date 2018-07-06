@@ -1,32 +1,32 @@
 <div class="part">
-	<!--评论区域 begin-->
+    <!--评论区域 begin-->
     <div class="reviewArea clearfix">
         <textarea class="content comment-input" placeholder="请输入内容..." onkeyup="keyUP(this)"></textarea>
         <a href="/process/message" class="plBtn">评论</a>
     </div>
     <!--评论区域 end-->
     {{#each msgs}}
-    	<div class="comment-show">
-    	    <div class="comment-show-con clearfix">
-    	        <div class="comment-show-con-img pull-left"><img src="/img/avatar.jpg" alt=""></div>
-    	        <div class="comment-show-con-list pull-left clearfix">
-    	            <div class="pl-text clearfix">
-    	                <a href="#" class="comment-size-name">{{this.userName}}</a>&nbsp;：&nbsp;
-    	                <span class="my-pl-con">{{this.content}}</span>
-    	            </div>
-    	            <div class="date-dz">
-    	                <span class="date-dz-left pull-left comment-time">{{this.createTime}}</span>
-    	                <div class="date-dz-right pull-right comment-pl-block">
-    	                    <a href="/process/message" class="removeBlock">删除</a>
-    	                    <a href="javascript:;" class="date-dz-pl pl-hf hf-con-block pull-left">回复</a>
-    	                    <span class="pull-left date-dz-line">|</span>
-    	                    <a href="/process/comment" class="date-dz-z pull-left"><i class="date-dz-z-click-red"></i>赞 (<i class="z-num">{{this.zan.num}}</i>)</a>
-    	                </div>
-    	            </div>
-    	            <div class="hf-list-con"></div>
-    	        </div>
-    	    </div>
-    	</div>
+        <div class="comment-show">
+            <div class="comment-show-con clearfix">
+                <div class="comment-show-con-img pull-left"><img src="/img/avatar.jpg" alt=""></div>
+                <div class="comment-show-con-list pull-left clearfix">
+                    <div class="pl-text clearfix">
+                        <a href="#" class="comment-size-name">{{this.userName}}</a>&nbsp;：&nbsp;
+                        <span class="my-pl-con">{{this.content}}</span>
+                    </div>
+                    <div class="date-dz">
+                        <span class="date-dz-left pull-left comment-time">{{this.createTime}}</span>
+                        <div class="date-dz-right pull-right comment-pl-block">
+                            <a href="/process/message" class="removeBlock">删除</a>
+                            <a href="javascript:;" class="date-dz-pl pl-hf hf-con-block pull-left">回复</a>
+                            <span class="pull-left date-dz-line">|</span>
+                            <a href="/process/comment" class="date-dz-z pull-left"><i class="date-dz-z-click-red"></i>赞 (<i class="z-num">{{this.zan.num}}</i>)</a>
+                        </div>
+                    </div>
+                    <div class="hf-list-con"></div>
+                </div>
+            </div>
+        </div>
     {{/each}}
 </div>
 <script type="text/javascript" src="js/jquery.flexText.js"></script>
@@ -51,8 +51,8 @@
         evt.preventDefault();
         var account=$('#account');
         if (!(account.text())) {
-        	$('.erroAuth').text('请先登录');
-        	return ;
+            $('.erroAuth').text('请先登录');
+            return ;
         }
         var myDate = new Date();
         //获取当前年
@@ -144,7 +144,7 @@
         console.log(oHfVal)
         var oHfName = $(this).parents('.hf-con').parents('.date-dz').siblings('.pl-text').find('.comment-size-name').html();
         var oAllVal = '回复@'+oHfName;
-        if(oHfVal.replace(/^ +| +$/g,'') == '' || oHfVal == oAllVal){
+        if(oHfVal.replace(/^ +| +$/g,'') === '' || oHfVal === oAllVal){
 
         }else {
             $.getJSON("json/pl.json",function(data){
@@ -225,7 +225,7 @@
             owner=comment.find('.comment-size-name').text(),
             content=comment.find('.my-pl-con').text(),
             zNum = $(this).find('.z-num').html(),
-            action='/process/message';//$(this).attr('href');
+            action='/process/message';
         var dataString='userName='+ userName + '&owner=' + owner + '&content=' + content + '&zNum=' + zNum;
         if($(this).is('.date-dz-z-click')){
             zNum--;

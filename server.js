@@ -3,7 +3,7 @@ var express = require('express'),
     app     = express();
 var session = require('express-session');
 var User = require('./models/user.js'),
-  Message=require('./models/message.js');
+    Message=require('./models/message.js');
 var credentials=require('./credentials.js');
 var songinfo=require('./lib/songinfo.js');
 var baseUrl=require('./lib/static.js');
@@ -53,13 +53,18 @@ app.use(function (req,res,next) {
   if (!res.locals.partials){
     res.locals.partials={};
   }
-  
   res.locals.partials.ref='reffer';
-  res.locals.user=req.session.user;
-  delete req.session.user;
-  res.locals.error=req.session.error;
-  delete req.session.error;
-  res.locals.islogin=req.signedCookies.islogin;
+  
+  //使用cookies确认登录状态,session保存登录信息
+  if (req.signedCookies.islogin) {
+    res.locals.user=req.session.user;
+  }
+  else {
+    res.locals.user=null;
+    delete req.session.user;
+  }
+  //res.locals.error=req.session.error;
+  //res.locals.islogin=req.signedCookies.islogin;
   next();
 });
 
@@ -134,18 +139,6 @@ app.get('/list/:types',function (req,res,next) {
   res.render(types,{
     song:info
   });
-});
-
-//data获取页
-app.get('/list/:types/:detail',function (req,res,next) {
-  var info=null;
-  var types=req.params.types,
-    detail=req.params.detail;
-  if(!detail){
-    return next();
-  }
-  info=songinfo[types][detail];
-  res.json(info);
 });
 
 //登录表单处理路由
@@ -229,30 +222,24 @@ app.post('/process/reg',function (req,res) {
 
 //评论获取
 app.get('/message',function(req, res){
-    var userName=req.query.userName||'';
+    var userName=req.session.user?req.session.user.name:'游客';
     //如果有用户名，说明前面已经提交过了，传递到视图上去，这样也没刷新后不用重新填写用户名
-    if (userName) {
-      Message.getAll(function(err,messages){
-          if(err){
-              console.log(err);
-              //异常跳转到error界面
-              res.redirect('/505');
-          }
-          else{
-              res.render('message', {
-                msgs:messages,
-                comment:true,
-                user:{
-                  name:userName
-                }
-              });
-          }
-      });
-    }
-    else{
-      console.log('未登录');
-      res.send('请先返回登录......');
-    }
+    Message.getAll(function(err,messages){
+        if(err){
+            console.log(err);
+            //异常跳转到error界面
+            res.redirect('/505');
+        }
+        else{
+            res.render('message', {
+              msgs:messages,
+              comment:true,
+              user:{
+                name:userName
+              }
+            });
+        }
+    });
 });
 
 // 评论储存
